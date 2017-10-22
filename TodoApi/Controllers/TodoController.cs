@@ -1,37 +1,33 @@
 using Microsoft.AspNetCore.Mvc;
-using TodoApi.Models;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using TodoApi.Repository;
+using TodoApi.Models;
 
 namespace TodoApi.Controllers
 {
     [Route("api/[controller]")]
     public class TodoController : Controller
     {
-        private TodoContext _context;
+    
+        private ITodoItemsRepository _repo; 
 
-        public TodoController(TodoContext context)
+        public TodoController(ITodoItemsRepository repo)
         {
-            _context = context;
-            
-            if (_context.TodoItems.Count() == 0)
-            {
-                _context.TodoItems.Add(new TodoItem { Name = "Test" });
-                _context.SaveChanges();
-            }
+            _repo = repo;
         }
 
         [HttpGet]
-        public IEnumerable<TodoItem> GetAll() 
+        public async Task<IEnumerable<TodoItem>> GetAll() 
         {
-            return _context.TodoItems.ToList();
+            return await _repo.GetAll();
         }
 
         [HttpGet("{id}", Name="GetToDo")]
-        public IActionResult GetById(long id)
+        public async Task<IActionResult> GetById(long id)
         {
-            TodoItem item = _context.TodoItems.FirstOrDefault(e => e.Id == id);
+            TodoItem item = await _repo.GetById(id);
             if (item == null)
             {
                 return NotFound();
@@ -41,28 +37,26 @@ namespace TodoApi.Controllers
         } 
 
         [HttpPost]
-        public IActionResult CreateItem([FromBody]TodoItem item)
+        public async Task<IActionResult> CreateItem([FromBody]TodoItem item)
         {
             if (item == null)
             {
                 return BadRequest();
             }
-
-            _context.TodoItems.Add(item);
-            _context.SaveChanges();
+            item = await _repo.Create(item);
             return CreatedAtRoute("GetToDo", new {id = item.Id}, item);
 
         }
 
         [HttpPut("{id}")]
-        public IActionResult Update(long id, [FromBody]TodoItem item)
+        public async Task<IActionResult> Update(long id, [FromBody]TodoItem item)
         {
             if (item == null || item.Id != id)
             {
                 return BadRequest();
             }
 
-            var todo = _context.TodoItems.FirstOrDefault(e => e.Id == id);
+            var todo = await _repo.GetById(id);
             if (todo == null)
             {
                 return NotFound();
@@ -70,23 +64,21 @@ namespace TodoApi.Controllers
 
             todo.Name = item.Name;
             todo.IsComplete = item.IsComplete;
-            _context.TodoItems.Update(todo);
-            _context.SaveChanges();
+            await _repo.Update(todo);
             return new NoContentResult();            
         }
 
         [HttpDelete("{id}")]
-        public IActionResult Delete(long id)
+        public async Task<IActionResult> Delete(long id)
         {
-            var todo = _context.TodoItems.FirstOrDefault(e => e.Id == id);
+            var todo = await _repo.GetById(id);
 
             if (todo == null)
             {
                 return NotFound();
             }
 
-            _context.TodoItems.Remove(todo);
-            _context.SaveChanges();
+            await _repo.Delete(id);
             return new NoContentResult();
         }
     }

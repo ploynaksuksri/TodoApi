@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.EntityFrameworkCore;
 using TodoApi.Models;
+using TodoApi.Repository;
 
 namespace TodoApi
 {
@@ -27,7 +28,7 @@ namespace TodoApi
         {
             // Add DbContext - use In memory database
             services.AddDbContext<TodoContext>(opt => opt.UseInMemoryDatabase("TodoList"));
-            
+            services.AddScoped<ITodoItemsRepository, TodoItemsRepository>();
             services.AddMvc();
         }
 

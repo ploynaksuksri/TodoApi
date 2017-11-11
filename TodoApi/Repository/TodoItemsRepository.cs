@@ -39,18 +39,18 @@ namespace TodoApi.Repository
             return item;
         }
 
-        public async Task Update(TodoItem item)
+        public async Task<bool> Update(TodoItem item)
         {
             _context.Attach(item);
             _context.Entry(item).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
+            return await _context.SaveChangesAsync() > 0 ? true : false;
         }
 
-        public async Task Delete(long id)
+        public async Task<bool> Delete(long id)
         {
             var item = await _context.TodoItems.SingleOrDefaultAsync(e => e.Id == id);
             _context.Remove(item);
-            await _context.SaveChangesAsync();
+            return await _context.SaveChangesAsync() > 0 ? true : false;
         }
     }
     

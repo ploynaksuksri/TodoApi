@@ -87,7 +87,7 @@ namespace TodoApi.Controllers
         [HttpPut("{id}")]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
         public async Task<IActionResult> Update(long id, [FromBody]TodoItem item)
         {
             if (item == null || item.Id != id)
@@ -103,8 +103,17 @@ namespace TodoApi.Controllers
 
             todo.Name = item.Name;
             todo.IsComplete = item.IsComplete;
-            await _repo.Update(todo);
-            return new NoContentResult();            
+            var result = await _repo.Update(todo);
+            if (result)
+            {
+                return Ok();
+            }
+            else
+            {
+                return BadRequest();
+            }
+            
+                      
         }
 
         /// <summary>
@@ -116,7 +125,8 @@ namespace TodoApi.Controllers
         /// <response code="204">If the item is deleted<response>
         [HttpDelete("{id}")]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
         public async Task<IActionResult> Delete(long id)
         {
             var todo = await _repo.GetById(id);
@@ -126,8 +136,16 @@ namespace TodoApi.Controllers
                 return NotFound();
             }
 
-            await _repo.Delete(id);
-            return new NoContentResult();
+            var result = await _repo.Delete(id);
+            if (result)
+            {
+                return Ok();
+            }
+            else
+            {
+                return BadRequest();
+            }
+            
         }
     }
 }

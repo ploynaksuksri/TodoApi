@@ -4,7 +4,7 @@ VisualStudioVersion = 15.0.27004.2008
 MinimumVisualStudioVersion = 15.0.26124.0
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TodoApi", "TodoApi\TodoApi.csproj", "{A02F6DB1-DFDF-4A45-A66E-27977992E37A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test-xUnit", "Test-xUnit\Test-xUnit.csproj", "{04227405-381C-44A6-A560-37721E1A7FA9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestxUnit", "Test-xUnit\TestxUnit.csproj", "{04227405-381C-44A6-A560-37721E1A7FA9}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test", "Test\Test.csproj", "{75687653-EEE1-48A5-B152-0C2B2F0E0B1F}"
 EndProject

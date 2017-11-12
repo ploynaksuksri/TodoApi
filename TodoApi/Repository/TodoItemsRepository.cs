@@ -14,12 +14,6 @@ namespace TodoApi.Repository
         public TodoItemsRepository(TodoContext context)
         {
             _context = context;
-             
-            if (_context.TodoItems.Count() == 0)
-            {
-                _context.TodoItems.Add(new TodoItem { Name = "Test" });
-                _context.SaveChanges();
-            }
         }
 
         public async Task<IEnumerable<TodoItem>> GetAll()

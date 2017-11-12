@@ -19,19 +19,27 @@ namespace TodoApi
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        public Startup(IConfiguration configuration, IHostingEnvironment env)
         {
             Configuration = configuration;
+            CurrentEnvironment = env;
         }
 
         public IConfiguration Configuration { get; }
+        public IHostingEnvironment CurrentEnvironment { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            // Add DbContext - use In memory database
-            services.AddDbContext<TodoContext>(opt => opt.UseInMemoryDatabase("TodoList"));
+            // Add DbContext - use In memory database            
+            if (CurrentEnvironment.IsDevelopment())
+            {
+                services.AddDbContext<TodoContext>(opt => opt.UseInMemoryDatabase("TodoList"));
+            }
+
             services.AddScoped<ITodoItemsRepository, TodoItemsRepository>();
+            services.AddTransient<TodoItemsDbSeeder>();
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new Info 
@@ -49,7 +57,7 @@ namespace TodoApi
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, TodoItemsDbSeeder todoDbSeeder)
         {
             if (env.IsDevelopment())
             {
@@ -63,6 +71,9 @@ namespace TodoApi
             });
 
             app.UseMvc();
+
+            todoDbSeeder.SeedAsync(app.ApplicationServices).Wait();
         }
+
     }
 }

@@ -1,44 +1,34 @@
-using System;
 using Xunit;
 using TodoApi.Controllers;
 using TodoApi.Models;
 using System.Linq;
-using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using TodoApi.Repository;
 using Moq;
 using System.Threading.Tasks;
 
-namespace Test_xUnit
+namespace TestxUnit
 {
     public class TodoControllerShould
     {
-        // private TodoContext _context;
         private Mock<ITodoItemsRepository> _mockRepo;
         private List<TodoItem> _items;
 
-
         public TodoControllerShould()
         {
-            //var options = new DbContextOptionsBuilder<TodoContext>()
-            //    .UseInMemoryDatabase(databaseName: "Add_writes_to_database")
-            //    .Options;
-            //_context = new TodoContext(options);
-            
-
             _mockRepo = new Mock<ITodoItemsRepository>();
             _items = new List<TodoItem>()
             {
                 new TodoItem { Id = 1, Name = "Item 1", IsComplete = false },
                 new TodoItem { Id = 2, Name = "Item 2", IsComplete = true }
-            };
-            
+            };         
         } 
 
         
 
         [Fact]
+        [Trait("Category", "Controller")]
         public void ReturnAllItems()
         {
            _mockRepo.Setup(x => x.GetAll())
@@ -53,6 +43,7 @@ namespace Test_xUnit
         }
 
         [Fact]
+        [Trait("Category", "Controller")]
         public void ReturnItemWithGivenId()
         {            
             _mockRepo.Setup(x => x.GetById(1))
@@ -69,6 +60,7 @@ namespace Test_xUnit
         }
 
         [Fact]
+        [Trait("Category", "Controller")]
         public void ReturnNotFoundResultIfItemIsNotFound()
         {
             var id = 10;
@@ -86,6 +78,7 @@ namespace Test_xUnit
 
         
         [Fact]
+        [Trait("Category", "Controller")]
         public void CreateNewItemSuccessfully()
         {
             TodoItem newItem = new TodoItem { Id = 3, Name = "Item 3", IsComplete = false };
@@ -105,6 +98,7 @@ namespace Test_xUnit
 
         
         [Fact]
+        [Trait("Category", "Controller")]
         public void ReturnBadRequestIfItemToCreateIsNull()
         {   
             var controller = new TodoController(_mockRepo.Object);
@@ -116,6 +110,7 @@ namespace Test_xUnit
 
         
         [Fact]
+        [Trait("Category", "Controller")]
         public async Task UpdateItemSuccessfully()
         {  
             var updateItem = new TodoItem { Id = 4, Name = "Updated item", IsComplete = true };
@@ -134,7 +129,8 @@ namespace Test_xUnit
       
 
         [Fact]
-        public async Task ReturnBadRequestWhenItemToUpdateIsNull()
+        [Trait("Category", "Controller")]
+        public void ReturnBadRequestWhenItemToUpdateIsNull()
         {       
             var controller = new TodoController(_mockRepo.Object);
             var result = controller.Update(3, null).Result;
@@ -144,6 +140,7 @@ namespace Test_xUnit
 
           
         [Fact]
+        [Trait("Category", "Controller")]
         public void ReturnBadRequestWhenIdOfItemToUpdateAndIdAreNotMatched()
         {
             var item = new TodoItem { Id = 1 };
@@ -155,6 +152,7 @@ namespace Test_xUnit
         
 
         [Fact]
+        [Trait("Category", "Controller")]
         public void ReturnNotFoundResultWhenItemToUpdateIsNotFoundInDB()
         {
             _mockRepo.Setup(x => x.GetById(It.IsAny<long>())).ReturnsAsync((TodoItem)null);
@@ -168,6 +166,7 @@ namespace Test_xUnit
         }
         
         [Fact]
+        [Trait("Category", "Controller")]
         public async Task ShouldReturnOkIfItemIsDeleted()
         {
             _mockRepo.Setup(x => x.GetById(It.IsAny<long>())).ReturnsAsync(new TodoItem());
@@ -182,6 +181,7 @@ namespace Test_xUnit
         }
 
         [Fact]
+        [Trait("Category", "Controller")]
         public async Task ShouldResultNotFoundIfItemToDeleteIsNotFound()
         {
             _mockRepo.Setup(x => x.GetById(It.IsAny<long>())).ReturnsAsync((TodoItem)null);
@@ -194,6 +194,7 @@ namespace Test_xUnit
         }
 
         [Fact]
+        [Trait("Category", "Controller")]
         public async Task ShouldReturnBadRequestWhenFailToDeleteItem()
         {
             _mockRepo.Setup(x => x.GetById(It.IsAny<long>())).ReturnsAsync(new TodoItem { Id = 1 });
